@@ -107,7 +107,7 @@ new_state() ->
   MaxSequenceIncrease = pow(Base, 3),
   MaxSequence = pow(Base, 6) - MaxSequenceIncrease,
   PrefixLength = Length - 6,
-  Prefix =  string:lowercase(random(Base, PrefixLength)),
+  Prefix =  string:to_lower(random(Base, PrefixLength)),
   #state{
     base = Base,
     padding_str = PaddingStr,
