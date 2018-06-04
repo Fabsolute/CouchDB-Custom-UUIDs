@@ -96,9 +96,9 @@ new_state() ->
         ReadingLength
     end,
   PaddingStr =
-    case length(ReadingPaddingStr) =/= 1 of
+    case length(ReadingPaddingStr) == 1 of
       true ->
-        "0";
+        ReadingPaddingStr;
       false ->
         [H | _] = ReadingPaddingStr,
         H
