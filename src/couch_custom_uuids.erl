@@ -107,7 +107,7 @@ new_state() ->
   MaxSequenceIncrease = pow(Base, 3),
   MaxSequence = pow(Base, 6) - MaxSequenceIncrease,
   PrefixLength = Length - 6,
-  Prefix =  string:to_lower(random(Base, PrefixLength)),
+  Prefix = string:to_lower(random(Base, PrefixLength)),
   #state{
     base = Base,
     padding_str = PaddingStr,
@@ -117,12 +117,10 @@ new_state() ->
     prefix = Prefix
   }.
 
-random(_State, 0) ->
+random(_Base, 0) ->
   "";
-random(Base, 1) ->
-  format(crypto:rand_uniform(1, Base), Base);
 random(Base, Length) ->
-  Max = pow(Base, Length),
+  Max = pow(Base, Length) - 1,
   Min = pow(Base, Length - 1),
   format(crypto:rand_uniform(Min, Max), Base).
 
