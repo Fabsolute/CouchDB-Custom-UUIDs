@@ -1,5 +1,5 @@
 # Customize here
-NAME=couch_custom_id
+NAME=couch_custom_uuids
 VERSION=1.0.0
 # Stop customizing here
 
