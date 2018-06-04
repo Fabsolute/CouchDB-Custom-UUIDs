@@ -1,0 +1,9 @@
+%% -*- mode: erlang -*-
+{application, couch_custom_uuids, [
+  {description, "CouchDB Custom UUIDs Plugin"},
+  {vsn, "0.0.0"},
+  {modules, []},
+  {registered, []},
+  {applications, [kernel, stdlib]},
+  {env, []}
+]}.
