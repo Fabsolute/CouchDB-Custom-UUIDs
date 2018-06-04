@@ -3,20 +3,7 @@
 -author("ahmetturk").
 -export([handle_req/1]).
 
--record(httpd, {
-  mochi_req,
-  peer,
-  method,
-  requested_path_parts,
-  path_parts,
-  db_url_handlers,
-  user_ctx,
-  req_body = undefined,
-  design_url_handlers,
-  auth,
-  default_fun,
-  url_handlers
-}).
+-include_lib("couch/include/couch_db.hrl").
 
 handle_req(#httpd{method='GET'}=Req) ->
   Max = list_to_integer(couch_config:get("custom_uuids","max_count","1000")),
