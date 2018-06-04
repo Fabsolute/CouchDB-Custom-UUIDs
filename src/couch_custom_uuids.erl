@@ -101,7 +101,7 @@ new_state() ->
         ReadingPaddingStr;
       false ->
         [H | _] = ReadingPaddingStr,
-        H
+        [H]
     end,
 
   MaxSequenceIncrease = pow(Base, 3),
