@@ -22,7 +22,7 @@ handle_req(#httpd{method='GET'}=Req) ->
       {"Pragma", "no-cache"},
       {"ETag", Etag}
     ],
-    send_json(Req, 200, CacheBustingHeaders, {[{<<"uuids">>, UUIDs}]})
+    couch_httpd:send_json(Req, 200, CacheBustingHeaders, {[{<<"uuids">>, UUIDs}]})
                                       end);
 handle_req(Req) ->
-  send_method_not_allowed(Req, "GET").
+  couch_httpd:send_method_not_allowed(Req, "GET").
