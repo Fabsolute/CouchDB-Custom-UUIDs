@@ -23,7 +23,8 @@
   sequence,
   prefix,
   max_sequence,
-  max_sequence_increase
+  max_sequence_increase,
+  volatile_length
 }).
 
 start() ->
@@ -46,7 +47,14 @@ terminate(_Reason, _State) ->
 
 handle_call(create, _From, State) ->
   Sequence = State#state.sequence,
-  Result = list_to_binary(State#state.prefix ++ format(State#state.sequence, State)),
+  Result = list_to_binary(
+    State#state.prefix ++
+    couch_custom_uuids_util:pad_string(
+      couch_custom_uuids_util:to_base_string(State#state.sequence, State#state.base),
+      State#state.volatile_length,
+      State#state.padding_str
+    )
+  ),
   case Sequence >= State#state.max_sequence of
     true ->
       {reply, Result, new_state()};
@@ -75,60 +83,31 @@ inc(MaxSequenceIncrease) ->
 new_state() ->
   ReadingBase = list_to_integer(couch_config:get("custom_uuids", "base", "16")),
   ReadingLength = list_to_integer(couch_config:get("custom_uuids", "length", "6")),
+  ReadingPrefixLength = list_to_integer(couch_config:get("custom_uuids", "prefix_length", "0")),
   ReadingPaddingStr = couch_config:get("custom_uuids", "padding_str", "0"),
-  Base =
-    case ReadingBase > 36 of
-      true ->
-        36;
-      false ->
-        case ReadingBase < 10 of
-          true ->
-            10;
-          false ->
-            ReadingBase
-        end
-    end,
-  Length =
-    case ReadingLength < 6 of
-      true ->
-        6;
-      false ->
-        ReadingLength
-    end,
-  PaddingStr =
-    case length(ReadingPaddingStr) == 1 of
-      true ->
-        ReadingPaddingStr;
-      false ->
-        [H | _] = ReadingPaddingStr,
-        [H]
-    end,
 
-  MaxSequenceIncrease = pow(Base, 3),
-  MaxSequence = pow(Base, 6) - MaxSequenceIncrease,
-  PrefixLength = Length - 6,
-  Prefix = string:to_lower(random(Base, PrefixLength)),
+  Base = couch_custom_uuids_util:clamp(ReadingBase, 2, 64),
+  Length = couch_custom_uuids_util:clamp(ReadingLength, 6),
+  PaddingStr = couch_custom_uuids_util:substring(ReadingPaddingStr, 0, 1),
+  PrefixLength = couch_custom_uuids_util:clamp(ReadingPrefixLength, 0, Length - 3),
+
+  VolatileLength = Length - PrefixLength,
+  MaxSequenceIncrease = couch_custom_uuids_util:int_pow(Base, VolatileLength div 2),
+  MaxSequence = couch_custom_uuids_util:int_pow(Base, VolatileLength) - MaxSequenceIncrease,
+  Prefix = random(Base, PrefixLength),
   #state{
     base = Base,
     padding_str = PaddingStr,
     sequence = inc(MaxSequenceIncrease),
     max_sequence = MaxSequence,
     max_sequence_increase = MaxSequenceIncrease,
-    prefix = Prefix
+    prefix = Prefix,
+    volatile_length = VolatileLength
   }.
 
 random(_Base, 0) ->
   "";
 random(Base, Length) ->
-  Max = pow(Base, Length) - 1,
-  Min = pow(Base, Length - 1),
-  format(crypto:rand_uniform(Min, Max), Base).
-
-format(Number, #state{base = Base, padding_str = PaddingStr}) ->
-  Format = "~6." ++ integer_to_list(Base) ++ "." ++ PaddingStr ++ "b",
-  io_lib:format(Format, [Number]);
-format(Number, Base) ->
-  integer_to_list(Number, Base).
-
-pow(Base, Pow) ->
-  trunc(math:pow(Base, Pow)).
+  Max = couch_custom_uuids_util:int_pow(Base, Length) - 1,
+  Min = couch_custom_uuids_util:int_pow(Base, Length - 1),
+  couch_custom_uuids_util:to_base_string(crypto:rand_uniform(Min, Max), Base).
