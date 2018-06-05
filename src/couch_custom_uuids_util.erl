@@ -127,11 +127,9 @@ substring(String, Start, Length) ->
 pad_string(String, Length, PadStr) ->
   pad_string(String, Length, PadStr, left).
 pad_string(String, Length, PadStr, left) ->
-  string:pad(String, Length, leading, PadStr);
+  string:left(String, Length, PadStr);
 pad_string(String, Length, PadStr, right) ->
-  string:pad(String, Length, leading, PadStr);
-pad_string(String, Length, PadStr, both) ->
-  string:pad(String, Length, both, PadStr).
+  string:right(String, Length, PadStr).
 
 int_pow(Number, Power) ->
   trunc(math:pow(Number, Power)).
