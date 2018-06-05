@@ -116,10 +116,13 @@ clamp(Number, Min) ->
   end.
 
 substring(String, Start) ->
-  string:slice(String, Start).
+  {_, SecondPart} = lists:split(Start, String),
+  SecondPart.
 
 substring(String, Start, Length) ->
-  string:slice(String, Start, Length).
+  SecondPart = substring(String, Start),
+  {FirstPart, _} = lists:split(Length, SecondPart),
+  FirstPart.
 
 pad_string(String, Length, PadStr) ->
   pad_string(String, Length, PadStr, left).
