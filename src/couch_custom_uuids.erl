@@ -97,7 +97,7 @@ new_state() ->
   Prefix = random(Base, PrefixLength),
   #state{
     base = Base,
-    padding_str = PaddingStr,
+    padding_str = lists:nth(1,PaddingStr),
     sequence = inc(MaxSequenceIncrease),
     max_sequence = MaxSequence,
     max_sequence_increase = MaxSequenceIncrease,
