@@ -10,89 +10,9 @@
 -author("ahmetturk").
 
 %% API
--export([to_base_string/2, to_base_string/3, pad_string/3, pad_string/4]).
+-export([pad_string/3, pad_string/4, to_base_string/2]).
 -export([clamp/3, clamp/2, substring/2, substring/3]).
 -export([int_pow/2]).
-
-get_base_char(Index, Lookup) ->
-  [lists:nth(Index + 1, Lookup)].
-
-to_base_string(Number, Base) when is_integer(Number), is_integer(Base), Base =< 64 ->
-  Lookup = [
-    "0",
-    "1",
-    "2",
-    "3",
-    "4",
-    "5",
-    "6",
-    "7",
-    "8",
-    "9",
-    "a",
-    "b",
-    "c",
-    "d",
-    "e",
-    "f",
-    "g",
-    "h",
-    "i",
-    "j",
-    "k",
-    "l",
-    "m",
-    "n",
-    "o",
-    "p",
-    "q",
-    "r",
-    "s",
-    "t",
-    "u",
-    "v",
-    "w",
-    "x",
-    "y",
-    "z",
-    "A",
-    "B",
-    "C",
-    "D",
-    "E",
-    "F",
-    "G",
-    "H",
-    "I",
-    "J",
-    "K",
-    "L",
-    "M",
-    "N",
-    "O",
-    "P",
-    "Q",
-    "R",
-    "S",
-    "T",
-    "U",
-    "V",
-    "W",
-    "X",
-    "Y",
-    "Z",
-    "-",
-    "_"
-  ],
-  to_base_string(Number, Base, Lookup).
-
-to_base_string(Number, Base, Lookup) when is_integer(Number), is_integer(Base), Base > 1 ->
-  case Number < Base of
-    true ->
-      get_base_char(Number, Lookup);
-    false ->
-      to_base_string(Number div Base, Base, Lookup) ++ get_base_char(Number rem Base, Lookup)
-  end.
 
 clamp(Number, Min, Max) ->
   case Number > Max of
@@ -133,3 +53,6 @@ pad_string(String, Length, PadStr, right) ->
 
 int_pow(Number, Power) ->
   trunc(math:pow(Number, Power)).
+
+to_base_string(Number, Base) ->
+  string:replace(string:replace(base_util:number_to_base_string(Number, Base), "+", "-"), "/", "_").
