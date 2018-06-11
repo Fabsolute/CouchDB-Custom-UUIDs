@@ -55,4 +55,14 @@ int_pow(Number, Power) ->
   trunc(math:pow(Number, Power)).
 
 to_base_string(Number, Base) ->
-  string:replace(string:replace(base_util:number_to_base_string(Number, Base), "+", "-"), "/", "_").
+  replace(replace(base_util:number_to_base_string(Number, Base), "+", "-"), "/", "_").
+
+replace(String, SearchPattern, Replacement) ->
+  replace(String, SearchPattern, Replacement, []).
+
+replace([], _SearchPattern, _Replacement, Acc) ->
+  Acc;
+replace([S | T], [S] = SearchPattern, Replacement, Acc) ->
+  replace(T, SearchPattern, Replacement, Acc ++ Replacement);
+replace([H | T], SearchPattern, Replacement, Acc) ->
+  replace(T, SearchPattern, Replacement, Acc ++ [H]).
