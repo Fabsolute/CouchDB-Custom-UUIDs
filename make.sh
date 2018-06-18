@@ -1,8 +1,13 @@
 #!/bin/bash
+erlang_version=`couch-config --erlang-version` &&
+couch_version=`couch-config --couch-version` &&
+lib_dir=`couch-config --erl-libs-dir` &&
+file_name="couch_custom_uuids-1.0.0-$erlang_version-$couch_version" &&
 git pull &&
-rm -rf couch_custom_uuids-1.0.0-18-1.6.1 couch_custom_uuids-1.0.0-18-1.6.1.tar.gz &&
+rm -rf "$file_name" "$file_name.tar.gz" &&
 make plugin &&
-sudo rm -rf /usr/lib/x86_64-linux-gnu/couchdb/erlang/lib/couch_custom_uuids-1.0.0-18-1.6.1/ &&
-sudo cp -rf couch_custom_uuids-1.0.0-18-1.6.1 /usr/lib/x86_64-linux-gnu/couchdb/erlang/lib &&
+sudo rm -rf "$lib_dir/$file_name/" &&
+sudo cp -rf "$file_name" "$lib_dir" &&
+sudo cp -rf deps/* "$lib_dir" &&
 sudo service couchdb restart &&
 sudo service couchdb status
